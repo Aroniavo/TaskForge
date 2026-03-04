@@ -5,7 +5,7 @@ services:
     build:
       context: ./backend
       target: dev  # dev ou prod
-    container_name: dailyflow_backend
+    container_name: taskforge_backend
     restart: always
     ports:
       - "5000:5000"
@@ -17,7 +17,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       PORT: ${PORT}
     networks:
-      - dailyflow_network
+      - taskforge_network
 
 networks:
-  dailyflow_network:
+  taskforge_network:

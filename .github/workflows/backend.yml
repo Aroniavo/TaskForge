@@ -2,7 +2,7 @@ name: Backend CI/CD - TaskForge
 
 on:
   push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
   build:
@@ -46,7 +46,7 @@ jobs:
           docker build --target prod -t taskforge_backend:prod ./Backend
 
       - name: Push Docker image to registry (optional)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
