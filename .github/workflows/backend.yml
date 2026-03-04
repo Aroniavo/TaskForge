@@ -1,4 +1,4 @@
-name: Backend CI/CD
+name: Backend CI/CD - TaskForge
 
 on:
   push:
@@ -8,28 +8,44 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: Aroniavo7170
-          POSTGRES_DB: dailyflow
-        ports:
-          - 5432:5432
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Set environment variables
+        run: |
+          echo "DB_HOST=${{ secrets.SUPABASE_DB_HOST }}" >> $GITHUB_ENV
+          echo "DB_PORT=6543" >> $GITHUB_ENV
+          echo "DB_USER=${{ secrets.SUPABASE_DB_USER }}" >> $GITHUB_ENV
+          echo "DB_PASS=${{ secrets.SUPABASE_DB_PASS }}" >> $GITHUB_ENV
+          echo "DB_NAME=${{ secrets.SUPABASE_DB_NAME }}" >> $GITHUB_ENV
+          echo "NODE_ENV=production" >> $GITHUB_ENV
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
+
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
+      - name: Install dependencies
+        run: |
+          cd Backend
+          npm install
+
+      - name: Run backend tests
+        run: |
+          cd Backend
+          npm test
+
       - name: Build Docker image (dev)
         run: |
-          docker build --target dev -t dailyflow_backend:dev ./backend
+          docker build --target dev -t taskforge_backend:dev ./Backend
 
       - name: Build Docker image (prod)
         run: |
-          docker build --target prod -t dailyflow_backend:prod ./backend
+          docker build --target prod -t taskforge_backend:prod ./Backend
+
+      - name: Push Docker image to registry (optional)
+        run: |
+          docker tag taskforge_backend:prod ${{ secrets.DOCKERHUB_USERNAME }}/taskforge_backend:prod
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/taskforge_backend:prod

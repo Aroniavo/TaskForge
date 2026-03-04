@@ -1,43 +1,23 @@
 version: "3.8"
 
 services:
-  postgres:
-    image: postgres:15.17-trixie
-    container_name: dailyflow_db
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Aroniavo7170
-      POSTGRES_DB: dailyflow
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - dailyflow_network
-
   backend:
     build:
       context: ./backend
-      target: dev  # pour dev, ou prod pour prod
+      target: dev  # dev ou prod
     container_name: dailyflow_backend
     restart: always
-    depends_on:
-      - postgres
     ports:
       - "5000:5000"
     environment:
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASS: Aroniavo7170
-      DB_NAME: dailyflow
-      JWT_SECRET: supersecret
-      PORT: 5000
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: ${PORT}
     networks:
       - dailyflow_network
-  
-volumes:
-  pgdata:
 
 networks:
   dailyflow_network:
