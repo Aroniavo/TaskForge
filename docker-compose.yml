@@ -3,7 +3,7 @@ version: "3.8"
 services:
   backend:
     build:
-      context: ./backend
+      context: ./Backend
       target: dev  # dev ou prod
     container_name: taskforge_backend
     restart: always

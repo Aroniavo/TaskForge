@@ -1,7 +1,10 @@
 name: Backend CI/CD - TaskForge
 
+# Déclenche la pipeline sur push vers develop et sur PR vers develop
 on:
   push:
+    branches: [develop]
+  pull_request:
     branches: [develop]
 
 jobs:
@@ -9,50 +12,68 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️ Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2️ Définir les variables d'environnement
       - name: Set environment variables
         run: |
           echo "DB_HOST=${{ secrets.SUPABASE_DB_HOST }}" >> $GITHUB_ENV
-          echo "DB_PORT=6543" >> $GITHUB_ENV
+          echo "DB_PORT=${{ secrets.SUPABASE_DB_PORT || '6543' }}" >> $GITHUB_ENV
           echo "DB_USER=${{ secrets.SUPABASE_DB_USER }}" >> $GITHUB_ENV
           echo "DB_PASS=${{ secrets.SUPABASE_DB_PASS }}" >> $GITHUB_ENV
           echo "DB_NAME=${{ secrets.SUPABASE_DB_NAME }}" >> $GITHUB_ENV
           echo "NODE_ENV=production" >> $GITHUB_ENV
           echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
 
+      # 3 Installer Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
+      # 4️ Installer les dépendances
       - name: Install dependencies
         run: |
           cd Backend
-          npm install
+          npm ci
 
+      # 5️ Lancer les tests
       - name: Run backend tests
         run: |
           cd Backend
           npm test
 
+      # 6️ Build Docker (dev)
       - name: Build Docker image (dev)
         run: |
           docker build --target dev -t taskforge_backend:dev ./Backend
 
+      # 7️ Build Docker (prod)
       - name: Build Docker image (prod)
         run: |
           docker build --target prod -t taskforge_backend:prod ./Backend
 
-      - name: Push Docker image to registry (optional)
+      # 8️ Push Docker sur DockerHub si DOCKERHUB_USERNAME défini
+      - name: Push Docker image to registry
         if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         run: |
           if [ -n "$DOCKERHUB_USERNAME" ]; then
+            echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker tag taskforge_backend:prod $DOCKERHUB_USERNAME/taskforge_backend:prod
             docker push $DOCKERHUB_USERNAME/taskforge_backend:prod
           else
             echo "DOCKERHUB_USERNAME secret not set, skipping push."
           fi
+
+      # 9️ Enable Auto-Merge pour les PR
+      - name: Enable Auto-Merge PR
+        uses: peter-evans/enable-pull-request-automerge@v2
+        if: github.event_name == 'pull_request'
+        with:
+          pull-request-number: ${{ github.event.pull_request.number }}
+          merge-method: squash
