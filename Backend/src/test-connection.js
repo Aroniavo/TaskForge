@@ -13,6 +13,7 @@ if (result.error) {
     console.warn(`⚠️ Attention : Impossible de charger le fichier env à : ${envPath}`);
 }
 
+
 console.log(
   `--- Vérification de la connexion (${process.env.NODE_ENV || "development"}) ---`,
 );
@@ -23,6 +24,7 @@ if (!process.env.DB_HOST || !process.env.DB_NAME) {
     console.error('Vérifiez que le fichier .env existe à la racine.');
     process.exit(1);
 }
+
 
 console.log(`Host: ${process.env.DB_HOST}`);
 console.log(`Port: ${process.env.DB_PORT || 5432}`);
