@@ -46,10 +46,12 @@ app.get('/health', async (req, res) => {
     }
 });
 
+// CI/CD Test: Verifying Auto-Merge fix
 app.get('/test', (req, res) => {
     res.send('TaskForge Backend API is running...');
 });
 
+// CI/CD Test: Verifying Auto-Merge fix
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`📡 Connecting to Supabase at ${process.env.DB_HOST}`);
