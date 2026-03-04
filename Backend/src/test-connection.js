@@ -18,17 +18,20 @@ console.log(
 );
 console.log(`Fichier utilisé : ${envPath}`);
 
+// Test connection
 if (!process.env.DB_HOST || !process.env.DB_NAME) {
     console.error('❌ Erreur : Les variables d\'environnement (DB_HOST, DB_NAME, etc.) ne sont pas chargées.');
     console.error('Vérifiez que le fichier .env existe à la racine.');
     process.exit(1);
 }
 
+// Test connection
 console.log(`Host: ${process.env.DB_HOST}`);
 console.log(`Port: ${process.env.DB_PORT || 5432}`);
 console.log(`Database: ${process.env.DB_NAME}`);
 console.log(`User: ${process.env.DB_USER}`);
 
+// Test connection
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -47,6 +50,7 @@ const sequelize = new Sequelize(
   },
 );
 
+// Test connection
 async function testConnection() {
   try {
     await sequelize.authenticate();
