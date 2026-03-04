@@ -1,0 +1,35 @@
+name: Backend CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: Aroniavo7170
+          POSTGRES_DB: dailyflow
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Build Docker image (dev)
+        run: |
+          docker build --target dev -t dailyflow_backend:dev ./backend
+
+      - name: Build Docker image (prod)
+        run: |
+          docker build --target prod -t dailyflow_backend:prod ./backend
