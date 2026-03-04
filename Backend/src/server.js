@@ -10,9 +10,11 @@ const envPath = process.env.NODE_ENV === 'production'
     : path.join(__dirname, '../../.env');
 dotenv.config({ path: envPath });
 
+// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -30,10 +32,12 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
     }
 });
 
+// Root route
 app.get('/', (req, res) => {
     res.send('TaskForge Backend API is running...');
 });
 
+// Health check route
 app.get('/health', async (req, res) => {
     try {
         await sequelize.authenticate();
@@ -43,6 +47,12 @@ app.get('/health', async (req, res) => {
     }
 });
 
+// Test route
+app.get('/test', (req, res) => {
+    res.send('TaskForge Backend API is running...');
+});
+
+// Start server
 app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`📡 Connecting to Supabase at ${process.env.DB_HOST}`);
