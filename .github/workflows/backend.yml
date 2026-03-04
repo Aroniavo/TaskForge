@@ -46,6 +46,13 @@ jobs:
           docker build --target prod -t taskforge_backend:prod ./Backend
 
       - name: Push Docker image to registry (optional)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          docker tag taskforge_backend:prod ${{ secrets.DOCKERHUB_USERNAME }}/taskforge_backend:prod
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/taskforge_backend:prod
+          if [ -n "$DOCKERHUB_USERNAME" ]; then
+            docker tag taskforge_backend:prod $DOCKERHUB_USERNAME/taskforge_backend:prod
+            docker push $DOCKERHUB_USERNAME/taskforge_backend:prod
+          else
+            echo "DOCKERHUB_USERNAME secret not set, skipping push."
+          fi
