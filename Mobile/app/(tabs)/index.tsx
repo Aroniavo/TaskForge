@@ -1,5 +1,7 @@
 import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, StyleSheet, Button } from 'react-native';
+import { useState } from 'react';
+import api from '@/services/api';
 
 import { HelloWave } from '@/components/hello-wave';
 import ParallaxScrollView from '@/components/parallax-scroll-view';
@@ -8,6 +10,18 @@ import { ThemedView } from '@/components/themed-view';
 import { Link } from 'expo-router';
 
 export default function HomeScreen() {
+  const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
+
+  const testConnection = async () => {
+    setConnectionStatus('Connecting...');
+    try {
+      const response = await api.get('/health');
+      setConnectionStatus(`✅ Connected: ${response.data.status} (DB: ${response.data.database})`);
+    } catch (error: any) {
+      setConnectionStatus(`❌ Error: ${error.message}`);
+    }
+  };
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -21,6 +35,20 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
       </ThemedView>
+      
+      <ThemedView style={styles.stepContainer}>
+        <ThemedText type="subtitle">Backend Connection Test</ThemedText>
+        <ThemedText>
+          Press the button below to test connectivity to the local Node.js backend and Supabase.
+        </ThemedText>
+        <Button title="Test Connection" onPress={testConnection} />
+        {connectionStatus && (
+          <ThemedText type="defaultSemiBold" style={{ marginTop: 8 }}>
+            {connectionStatus}
+          </ThemedText>
+        )}
+      </ThemedView>
+
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
         <ThemedText>
