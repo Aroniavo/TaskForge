@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ONBOARDING_SLIDES } from '../data/onboarding.data';
 
 interface OnboardingScreen4Props {
@@ -14,11 +14,12 @@ export const OnboardingScreen4: React.FC<OnboardingScreen4Props> = ({
   onGetStarted,
 }) => {
   const slide = ONBOARDING_SLIDES[3];
+  const Illustration = slide.Illustration;
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={slide.image} style={styles.image} resizeMode="contain" />
+        <Illustration width={260} height={260} />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.title}>

@@ -1,126 +1,421 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet, Button } from 'react-native';
-import { useState } from 'react';
-import api from '@/services/api';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const PRIORITIES = [
+  {
+    id: '1',
+    title: 'Finish React Component',
+    tag: 'Development',
+    tagColor: '#38BDF8',
+    time: '2:00 PM',
+    accent: '#EF4444',
+  },
+  {
+    id: '2',
+    title: 'Review UX Research',
+    tag: 'Study',
+    tagColor: '#A855F7',
+    time: '4:30 PM',
+    accent: '#F59E0B',
+  },
+  {
+    id: '3',
+    title: 'Update Documentation',
+    tag: 'Docs',
+    tagColor: '#22C55E',
+    time: '6:00 PM',
+    accent: '#22C55E',
+  },
+];
 
-export default function HomeScreen() {
-  const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
+const CATEGORIES = [
+  { label: 'Dev', icon: 'code-slash-outline' as const, color: '#3B82F6' },
+  { label: 'Design', icon: 'brush-outline' as const, color: '#EC4899' },
+  { label: 'Study', icon: 'book-outline' as const, color: '#A855F7' },
+  { label: 'Health', icon: 'fitness-outline' as const, color: '#EF4444' },
+];
 
-  const testConnection = async () => {
-    setConnectionStatus('Connecting...');
-    try {
-      const response = await api.get('/health');
-      setConnectionStatus(`✅ Connected: ${response.data.status} (DB: ${response.data.database})`);
-    } catch (error: any) {
-      setConnectionStatus(`❌ Error: ${error.message}`);
-    }
-  };
+export default function DashboardScreen() {
+  const router = useRouter();
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Backend Connection Test</ThemedText>
-        <ThemedText>
-          Press the button below to test connectivity to the local Node.js backend and Supabase.
-        </ThemedText>
-        <Button title="Test Connection" onPress={testConnection} />
-        {connectionStatus && (
-          <ThemedText type="defaultSemiBold" style={{ marginTop: 8 }}>
-            {connectionStatus}
-          </ThemedText>
-        )}
-      </ThemedView>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Top header */}
+        <View style={styles.topRow}>
+          <View style={styles.userRow}>
+            <View style={styles.avatarCircle}>
+              <Ionicons name="person" size={20} color="#E5E7EB" />
+            </View>
+            <View>
+              <Text style={styles.welcomeLabel}>Welcome back</Text>
+              <Text style={styles.userName}>Alex Hunter</Text>
+            </View>
+          </View>
+          <View style={styles.topRight}>
+            <View style={styles.streakBadge}>
+              <Ionicons name="flame" size={14} color="#F59E0B" />
+              <Text style={styles.streakText}>5 Days</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.bellButton}
+              onPress={() => router.push('/notifications')}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="notifications-outline" size={18} color="#E5E7EB" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+        {/* Greeting */}
+        <Text style={styles.greeting}>Good Morning!</Text>
+        <Text style={styles.greetingSub}>Ready to crush your goals today?</Text>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+        {/* Motivational quote card */}
+        <View style={styles.quoteCard}>
+          <Text style={styles.quoteText}>
+            "Success is the sum of small efforts, repeated day in and day out."
+          </Text>
+        </View>
+
+        {/* Stats row */}
+        <View style={styles.statsRow}>
+          <View style={styles.statCardLarge}>
+            <Text style={styles.statLabel}>Daily Progress</Text>
+            <View style={styles.circleProgress}>
+              <Text style={styles.circleText}>75%</Text>
+            </View>
+            <Text style={styles.statHint}>6 of 8 tasks</Text>
+          </View>
+          <View style={styles.statColRight}>
+            <View style={styles.statCardSmall}>
+              <View style={styles.statIconRow}>
+                <Ionicons name="checkmark-circle" size={18} color="#22C55E" />
+                <Text style={styles.statBigNum}>12</Text>
+              </View>
+              <Text style={styles.statSmallLabel}>Completed this week</Text>
+            </View>
+            <View style={styles.statCardSmall}>
+              <View style={styles.statIconRow}>
+                <Ionicons name="timer-outline" size={18} color="#F59E0B" />
+                <Text style={styles.statBigNum}>4.5h</Text>
+              </View>
+              <Text style={styles.statSmallLabel}>Focus time today</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Today's Priorities */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Today's Priorities</Text>
+          <TouchableOpacity activeOpacity={0.7}>
+            <Text style={styles.viewAll}>View All</Text>
+          </TouchableOpacity>
+        </View>
+
+        {PRIORITIES.map((task) => (
+          <View key={task.id} style={styles.priorityCard}>
+            <View style={[styles.priorityAccent, { backgroundColor: task.accent }]} />
+            <View style={styles.priorityContent}>
+              <Text style={styles.priorityTitle}>{task.title}</Text>
+              <View style={styles.priorityMeta}>
+                <View style={[styles.tagPill, { backgroundColor: task.tagColor + '26' }]}>
+                  <Text style={[styles.tagText, { color: task.tagColor }]}>{task.tag}</Text>
+                </View>
+                <View style={styles.timeRow}>
+                  <Ionicons name="time-outline" size={12} color="#9CA3AF" />
+                  <Text style={styles.timeText}>{task.time}</Text>
+                </View>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.checkCircle} activeOpacity={0.7}>
+              <Ionicons name="checkmark" size={16} color="#6B7280" />
+            </TouchableOpacity>
+          </View>
+        ))}
+
+        {/* Categories */}
+        <Text style={[styles.sectionTitle, { marginTop: 8 }]}>Categories</Text>
+        <View style={styles.categoriesRow}>
+          {CATEGORIES.map((cat) => (
+            <TouchableOpacity key={cat.label} style={styles.categoryItem} activeOpacity={0.8}>
+              <View style={[styles.categoryIcon, { backgroundColor: cat.color + '1A' }]}>
+                <Ionicons name={cat.icon} size={22} color={cat.color} />
+              </View>
+              <Text style={styles.categoryLabel}>{cat.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  safe: {
+    flex: 1,
+    backgroundColor: '#020617',
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 32,
+  },
+  topRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
-  stepContainer: {
-    gap: 8,
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  avatarCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#0B1120',
+    borderWidth: 2,
+    borderColor: '#2563EB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  welcomeLabel: {
+    color: '#9CA3AF',
+    fontSize: 11,
+  },
+  userName: {
+    color: '#F9FAFB',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  topRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  streakBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+    backgroundColor: 'rgba(245,158,11,0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(245,158,11,0.3)',
+  },
+  streakText: {
+    color: '#F59E0B',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  bellButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#1E293B',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  greeting: {
+    color: '#F9FAFB',
+    fontSize: 26,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  greetingSub: {
+    color: '#9CA3AF',
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  quoteCard: {
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+    marginBottom: 20,
+    backgroundColor: '#7C3AED',
+    overflow: 'hidden',
+  },
+  quoteText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '600',
+    lineHeight: 26,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 24,
+  },
+  statCardLarge: {
+    flex: 1,
+    borderRadius: 20,
+    backgroundColor: '#020617',
+    borderWidth: 1,
+    borderColor: '#1E293B',
+    padding: 16,
+    alignItems: 'center',
+  },
+  statLabel: {
+    color: '#9CA3AF',
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  circleProgress: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 5,
+    borderColor: '#2563EB',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  circleText: {
+    color: '#F9FAFB',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  statHint: {
+    color: '#6B7280',
+    fontSize: 11,
+  },
+  statColRight: {
+    flex: 1,
+    gap: 12,
+  },
+  statCardSmall: {
+    flex: 1,
+    borderRadius: 20,
+    backgroundColor: '#020617',
+    borderWidth: 1,
+    borderColor: '#1E293B',
+    padding: 14,
+    justifyContent: 'center',
+  },
+  statIconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 4,
+  },
+  statBigNum: {
+    color: '#F9FAFB',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  statSmallLabel: {
+    color: '#9CA3AF',
+    fontSize: 11,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    color: '#F9FAFB',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  viewAll: {
+    color: '#60A5FA',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  priorityCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
+    backgroundColor: '#020617',
+    borderWidth: 1,
+    borderColor: '#111827',
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    marginBottom: 10,
+  },
+  priorityAccent: {
+    width: 4,
+    height: '100%',
+    borderRadius: 999,
+    marginRight: 14,
+    minHeight: 40,
+  },
+  priorityContent: {
+    flex: 1,
+  },
+  priorityTitle: {
+    color: '#F9FAFB',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  priorityMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  tagPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+  },
+  tagText: {
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  timeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  timeText: {
+    color: '#9CA3AF',
+    fontSize: 11,
+  },
+  checkCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 1.5,
+    borderColor: '#374151',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoriesRow: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 8,
+  },
+  categoryItem: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  categoryIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoryLabel: {
+    color: '#9CA3AF',
+    fontSize: 11,
+    fontWeight: '500',
   },
 });

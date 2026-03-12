@@ -1,11 +1,16 @@
-import { ImageSourcePropType } from 'react-native';
+import type { ComponentType } from 'react';
+import type { SvgProps } from 'react-native-svg';
+import OnboardingIcon1 from '../../../assets/Icon/Oboarding1.svg';
+import OnboardingIcon2 from '../../../assets/Icon/Onboarding2.svg';
+import OnboardingIcon3 from '../../../assets/Icon/Onboarding3.svg';
+import OnboardingIcon4 from '../../../assets/Icon/Onboarding4.svg';
 
 export interface OnboardingSlide {
   id: string;
   title: string;
   titleHighlight: string;
   description: string;
-  image: ImageSourcePropType;
+  Illustration: ComponentType<SvgProps>;
 }
 
 export const ONBOARDING_SLIDES: OnboardingSlide[] = [
@@ -15,7 +20,7 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     titleHighlight: 'Day',
     description:
       'Set your 3 main priorities and organize your coding or study sessions with ease.',
-    image: require('../../../assets/images/onboarding1.png'),
+    Illustration: OnboardingIcon1,
   },
   {
     id: 'screen2',
@@ -23,7 +28,7 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     titleHighlight: 'Motivation',
     description:
       'Receive daily smart quotes and personalized reminders tailored to your well-being and health goals.',
-    image: require('../../../assets/images/onboarding2.png'),
+    Illustration: OnboardingIcon2,
   },
   {
     id: 'screen3',
@@ -31,7 +36,7 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     titleHighlight: 'Daily Goals',
     description:
       'Track your steps, complete tasks, and earn XP as you build a healthier routine. Productivity made fun.',
-    image: require('../../../assets/images/onboarding3.png'),
+    Illustration: OnboardingIcon3,
   },
   {
     id: 'screen4',
@@ -39,6 +44,6 @@ export const ONBOARDING_SLIDES: OnboardingSlide[] = [
     titleHighlight: 'Your Life',
     description:
       'Earn badges, maintain streaks, and climb the ranks from Beginner to Productivity Master.',
-    image: require('../../../assets/images/onboarding4.png'),
+    Illustration: OnboardingIcon4,
   },
 ];

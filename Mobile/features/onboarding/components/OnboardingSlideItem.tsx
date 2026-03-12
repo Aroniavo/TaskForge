@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { OnboardingSlide } from '../data/onboarding.data';
 
 const { width } = Dimensions.get('window');
@@ -26,11 +19,13 @@ export const OnboardingSlideItem: React.FC<OnboardingSlideItemProps> = ({
   currentIndex,
   totalSlides,
 }) => {
+  const Illustration = item.Illustration;
+
   return (
     <View style={styles.slide}>
-      {/* Image illustration */}
+      {/* Illustration */}
       <View style={styles.imageContainer}>
-        <Image source={item.image} style={styles.image} resizeMode="contain" />
+        <Illustration width={260} height={260} />
       </View>
 
       {/* Bottom content */}
@@ -80,11 +75,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
     width: '100%',
-  },
-  image: {
-    width: '100%',
-    height: 340,
-    borderRadius: 24,
   },
   textContainer: {
     width: '100%',

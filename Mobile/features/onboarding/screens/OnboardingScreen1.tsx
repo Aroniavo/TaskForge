@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { ONBOARDING_SLIDES } from '../data/onboarding.data';
 
 /**
@@ -8,11 +8,12 @@ import { ONBOARDING_SLIDES } from '../data/onboarding.data';
  */
 export const OnboardingScreen1: React.FC = () => {
   const slide = ONBOARDING_SLIDES[0];
+  const Illustration = slide.Illustration;
 
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={slide.image} style={styles.image} resizeMode="contain" />
+        <Illustration width={260} height={260} />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.title}>

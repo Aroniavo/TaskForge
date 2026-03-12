@@ -37,6 +37,11 @@ export const OnboardingNavigator: React.FC = () => {
         keyExtractor={(item) => item.id}
         horizontal
         pagingEnabled
+        decelerationRate="fast"
+        snapToInterval={width}
+        snapToAlignment="center"
+        bounces={false}
+        overScrollMode="never"
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
