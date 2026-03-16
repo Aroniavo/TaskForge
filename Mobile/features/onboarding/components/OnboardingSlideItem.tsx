@@ -1,60 +1,117 @@
-import React from 'react';
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { OnboardingSlide } from '../data/onboarding.data';
+import React, { useEffect } from 'react';
+import { Dimensions, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { 
+  useAnimatedStyle, 
+  useSharedValue, 
+  withRepeat, 
+  withSequence, 
+  withTiming,
+  Easing
+} from 'react-native-reanimated';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
+// Branded Image from assets/illustrator
+const BrandedIllustrator = require('../../../assets/illustrator/illustrator.png');
+
 interface OnboardingSlideItemProps {
-  item: OnboardingSlide;
-  isLast: boolean;
   onGetStarted: () => void;
-  currentIndex: number;
-  totalSlides: number;
 }
 
 export const OnboardingSlideItem: React.FC<OnboardingSlideItemProps> = ({
-  item,
-  isLast,
   onGetStarted,
-  currentIndex,
-  totalSlides,
 }) => {
-  const Illustration = item.Illustration;
+  const floatingValue = useSharedValue(0);
+  const pulseValue = useSharedValue(1);
+
+  useEffect(() => {
+    // Floating animation for the card
+    floatingValue.value = withRepeat(
+      withSequence(
+        withTiming(-12, { duration: 3000, easing: Easing.inOut(Easing.sin) }),
+        withTiming(12, { duration: 3000, easing: Easing.inOut(Easing.sin) })
+      ),
+      -1,
+      true
+    );
+
+    // Subtle pulse for a premium feel
+    pulseValue.value = withRepeat(
+      withTiming(1.04, { duration: 4000, easing: Easing.inOut(Easing.sin) }),
+      -1,
+      true
+    );
+  }, []);
+
+  const animatedCardStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateY: floatingValue.value },
+        { scale: pulseValue.value }
+      ],
+    };
+  });
 
   return (
     <View style={styles.slide}>
-      {/* Illustration */}
-      <View style={styles.imageContainer}>
-        <Illustration width={260} height={260} />
+      {/* Background Gradient for overall depth */}
+      <LinearGradient
+        colors={['#0F0D21', '#1A1A32', '#0D0D21']}
+        style={StyleSheet.absoluteFill}
+      />
+
+      {/* Top Section - Branded Illustration Card */}
+      <View style={styles.topSection}>
+        <Animated.View style={[styles.cardContainer, animatedCardStyle]}>
+          <LinearGradient
+            colors={['rgba(139, 92, 246, 0.12)', 'rgba(76, 29, 149, 0.05)']}
+            style={styles.cardGradient}
+          >
+            <BlurView intensity={25} tint="dark" style={styles.blurBackground} />
+            <View style={styles.illustrationWrapper}>
+              <Image 
+                source={BrandedIllustrator} 
+                style={styles.brandedImage} 
+                resizeMode="contain" 
+              />
+            </View>
+          </LinearGradient>
+        </Animated.View>
       </View>
 
-      {/* Bottom content */}
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>
-          {item.title}
-          <Text style={styles.titleHighlight}>{item.titleHighlight}</Text>
-        </Text>
-        <Text style={styles.description}>{item.description}</Text>
-
-        {/* Dot indicators */}
-        <View style={styles.dotsRow}>
-          {Array.from({ length: totalSlides }).map((_, index) => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                index === currentIndex ? styles.activeDot : styles.inactiveDot,
-              ]}
-            />
-          ))}
+      {/* Middle Section - Branded Text */}
+      <View style={styles.middleSection}>
+        <View style={styles.textWrapper}>
+          <Text style={styles.title}>
+            Master Your {'\n'}
+            <Text style={styles.titleHighlight}>Task Forge</Text>
+          </Text>
+          <Text style={styles.description}>
+            Forge your productivity with AI-driven insights and a gamified experience designed to level up your life.
+          </Text>
         </View>
+      </View>
 
-        {/* CTA on last slide */}
-        {isLast && (
-          <TouchableOpacity style={styles.button} onPress={onGetStarted} activeOpacity={0.85}>
-            <Text style={styles.buttonText}>Get Started 🚀</Text>
+      {/* Bottom Section - Branded Button */}
+      <View style={styles.bottomSection}>
+        <View style={styles.buttonWrapper}>
+          <TouchableOpacity 
+            onPress={onGetStarted} 
+            activeOpacity={0.8}
+            style={styles.buttonTouch}
+          >
+            <LinearGradient
+              colors={['#8B5CF6', '#6D28D9']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.buttonGradient}
+            >
+              <Text style={styles.buttonText}>Get Started 🚀</Text>
+            </LinearGradient>
           </TouchableOpacity>
-        )}
+        </View>
       </View>
     </View>
   );
@@ -64,77 +121,104 @@ const styles = StyleSheet.create({
   slide: {
     width,
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingBottom: 48,
   },
-  imageContainer: {
+  topSection: {
+    flex: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 60,
+  },
+  cardContainer: {
+    width: width * 0.88,
+    aspectRatio: 1,
+    borderRadius: 48,
+    overflow: 'hidden',
+    borderWidth: 1.5,
+    borderColor: 'rgba(167, 139, 250, 0.2)', // Light violet border
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 25 },
+    shadowOpacity: 0.15,
+    shadowRadius: 45,
+    elevation: 15,
+  },
+  cardGradient: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    width: '100%',
   },
-  textContainer: {
+  blurBackground: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  illustrationWrapper: {
     width: '100%',
-    paddingHorizontal: 32,
+    height: '100%',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 12,
+    padding: 20,
+  },
+  brandedImage: {
+    width: '110%',
+    height: '110%',
+  },
+  middleSection: {
+    flex: 3,
+    paddingHorizontal: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textWrapper: {
+    alignItems: 'center',
+    width: '100%',
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
+    fontSize: 34,
+    fontWeight: '900',
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 36,
+    lineHeight: 42,
+    marginBottom: 16,
   },
   titleHighlight: {
-    color: '#4A90FF',
+    color: '#A78BFA', // Vibrant Lavender/Violet
   },
   description: {
-    fontSize: 14,
-    color: '#8899BB',
+    fontSize: 16,
+    color: '#C4B5FD', // Soft Lavender
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 8,
+    lineHeight: 26,
+    paddingHorizontal: 8,
   },
-  dotsRow: {
-    flexDirection: 'row',
+  bottomSection: {
+    flex: 2,
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-  },
-  dot: {
-    borderRadius: 4,
-    height: 8,
-  },
-  activeDot: {
-    width: 28,
-    backgroundColor: '#4A90FF',
-  },
-  inactiveDot: {
-    width: 8,
-    backgroundColor: '#2A3A5A',
-  },
-  button: {
-    marginTop: 16,
-    backgroundColor: '#4A90FF',
-    paddingHorizontal: 48,
-    paddingVertical: 16,
-    borderRadius: 32,
+    paddingBottom: 40,
     width: '100%',
+  },
+  buttonWrapper: {
+    width: '100%',
+    paddingHorizontal: 24,
+  },
+  buttonTouch: {
+    width: '100%',
+    height: 64,
+    borderRadius: 22,
+    overflow: 'hidden',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 25,
+    elevation: 12,
+  },
+  buttonGradient: {
+    flex: 1,
     alignItems: 'center',
-    shadowColor: '#4A90FF',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.45,
-    shadowRadius: 14,
-    elevation: 8,
+    justifyContent: 'center',
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '700',
-    letterSpacing: 0.3,
+    fontSize: 20,
+    fontWeight: '800',
+    letterSpacing: 0.8,
   },
 });
